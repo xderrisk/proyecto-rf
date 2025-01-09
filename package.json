@@ -1,0 +1,27 @@
+{
+  "name": "proyecto-rf",
+  "version": "1.0.0",
+  "description": "Control de acceso con reconocimiento facial",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xderrisk/proyecto-rf.git"
+  },
+  "keywords": [
+    "electron",
+    "facial-recognition"
+  ],
+  "author": "Sergio Galarza",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xderrisk/proyecto-rf/issues"
+  },
+  "homepage": "https://github.com/xderrisk/proyecto-rf#readme",
+  "devDependencies": {
+    "electron": "^33.3.1",
+    "electron-reload": "^2.0.0-alpha.1"
+  }
+}
