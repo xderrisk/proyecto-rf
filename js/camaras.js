@@ -1,3 +1,5 @@
+const { ipcRenderer } = require('electron');
+
 let videos = [];
 
 function activar() {
@@ -12,6 +14,7 @@ function activar() {
                 video.srcObject = stream;
                 video.autoplay = true;
                 document.body.appendChild(video);
+                videos.push(video);
             })
             .catch(error => {
                 console.error('Error al acceder a la cámara:', error);
@@ -24,7 +27,7 @@ function activar() {
 }
 
 function apagar() {
-    videoElements.forEach(video => {
+    videos.forEach(video => {
         const tracks = video.srcObject.getTracks();
         tracks.forEach(track => track.stop());
         video.srcObject = null;
@@ -32,6 +35,14 @@ function apagar() {
     });
     videos = [];
 }
+
+ipcRenderer.on('toggle-cameras', (event, shouldTurnOff) => {
+    if (shouldTurnOff) {
+      apagar();
+    } else {
+      activar();
+    }
+  });
 
 document.addEventListener('DOMContentLoaded', () => {
     activar();

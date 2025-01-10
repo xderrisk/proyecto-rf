@@ -4,6 +4,7 @@
   "description": "Control de acceso con reconocimiento facial",
   "main": "js/main.js",
   "scripts": {
+    "start": "electron .",
     "test": "electron ."
   },
   "repository": {
