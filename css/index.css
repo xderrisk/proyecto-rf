@@ -1,0 +1,28 @@
+header {
+    border-radius: 25px;
+    background-color: #313131;
+    display: flex;
+    justify-content: space-between;
+}
+
+header img {
+    height: 75px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.card-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.card {
+    border-radius: 25px;
+    background-color: #313131;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    font-size: 24px;
+}
