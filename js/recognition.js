@@ -24,23 +24,37 @@ function startWebcam() {
     });
 }
 
-function getLabeledFaceDescriptions() {
-  const labels = ["Sergio Galarza"];
+async function getLabeledFaceDescriptions() {
+  const usuarios = await window.api.obtenerUsuarios();
+  if (!Array.isArray(usuarios) || usuarios.length === 0) {
+    console.warn("No hay usuarios en la base de datos.");
+    return [];
+  }
+
   return Promise.all(
-    labels.map(async (label) => {
-      const descriptions = [];
-      for (let i = 1; i <= 2; i++) {
-        const imgPath = await window.api.rutaImagenes();
-        const img = await faceapi.fetchImage(`${imgPath}/${label}/${i}.jpg`);
+    usuarios.map(async (usuario) => {
+      try {
+        const imageBlob = new Blob([new Uint8Array(usuario.imagen)], { type: "image/jpeg" });
+        const imageURL = URL.createObjectURL(imageBlob);
+        const img = await faceapi.fetchImage(imageURL);
+
         const detections = await faceapi
           .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
           .withFaceLandmarks()
           .withFaceDescriptor();
-        descriptions.push(detections.descriptor);
+
+        if (!detections) {
+          console.warn(`No se detectó un rostro válido para ${usuario.nombre}`);
+          return null;
+        }
+
+        return new faceapi.LabeledFaceDescriptors(`${usuario.nombre} ${usuario.apellido}`, [detections.descriptor]);
+      } catch (error) {
+        console.error(`Error procesando la imagen de ${usuario.nombre}:`, error);
+        return null;
       }
-      return new faceapi.LabeledFaceDescriptors(label, descriptions);
     })
-  );
+  ).then((results) => results.filter(Boolean));
 }
 
 video.addEventListener("play", async () => {

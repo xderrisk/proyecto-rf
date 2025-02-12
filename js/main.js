@@ -173,6 +173,19 @@ ipcMain.handle('add-user', async (event, { nombre, apellido, imagen }) => {
   });
 });
 
+ipcMain.handle("obtenerUsuarios", async () => {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT nombre, apellido, imagen FROM user", [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+});
+
+
 app.whenReady().then(() => {
   createWindow();
 

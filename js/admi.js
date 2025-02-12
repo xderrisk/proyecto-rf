@@ -17,7 +17,12 @@ document.getElementById('addUserForm').addEventListener('submit' , function (eve
 
     window.api.add(nombre, apellido, imagen).then(result => {
         if (result.success) {
-            console.log('agregado con exito')
+            nombre = "";
+            apellido = "";
+            imagen = null;
+
+            mensaje.textContent = "Usuario agregado con éxito.";
+            mensaje.style.color = "green";
         } else {
             console.log('error')
         }

@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('api', {
     login: (username, password) => ipcRenderer.invoke('login', { username, password }),
     add: (nombre, apellido, imagen) => ipcRenderer.invoke('add-user', { nombre, apellido, imagen }),
     openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
+    obtenerUsuarios: () => ipcRenderer.invoke("obtenerUsuarios"),
 });
