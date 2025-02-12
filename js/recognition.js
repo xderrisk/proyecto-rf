@@ -1,4 +1,3 @@
-const video = document.getElementById("video");
 const cooldowns = {};
 const COOLDOWN_TIME = 5000;
 
@@ -7,21 +6,51 @@ window.api.rutaModelos().then((ruta) => {
     faceapi.nets.tinyFaceDetector.loadFromUri(ruta),
     faceapi.nets.faceRecognitionNet.loadFromUri(ruta),
     faceapi.nets.faceLandmark68Net.loadFromUri(ruta),
-  ]).then(startWebcam);
+  ]).then(setupCameras);
 });
 
-function startWebcam() {
-  navigator.mediaDevices
-    .getUserMedia({
-      video: true,
-      audio: false,
-    })
-    .then((stream) => {
+async function setupCameras() {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const videoDevices = devices.filter(device => device.kind === "videoinput");
+
+  if (videoDevices.length === 0) {
+    console.error("No se encontraron cámaras.");
+    return;
+  }
+
+  const container = document.getElementById("video-container");
+  container.innerHTML = "";
+
+  videoDevices.forEach(async (device, index) => {
+    const videoWrapper = document.createElement("div");
+    videoWrapper.classList.add("video-wrapper");
+
+    const video = document.createElement("video");
+    video.id = `video-${index}`;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.width = 320;
+    video.height = 240;
+
+    const canvas = document.createElement("canvas");
+    canvas.id = `canvas-${index}`;
+    canvas.classList.add("overlay-canvas");
+
+    videoWrapper.appendChild(video);
+    videoWrapper.appendChild(canvas);
+    container.appendChild(videoWrapper);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: device.deviceId },
+        audio: false,
+      });
       video.srcObject = stream;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      video.addEventListener("play", () => startFaceRecognition(video, canvas));
+    } catch (error) {
+      console.error(`Error accediendo a la cámara ${index}:`, error);
+    }
+  });
 }
 
 async function getLabeledFaceDescriptions() {
@@ -57,39 +86,37 @@ async function getLabeledFaceDescriptions() {
   ).then((results) => results.filter(Boolean));
 }
 
-video.addEventListener("play", async () => {
+async function startFaceRecognition(video, canvas) {
   const labeledFaceDescriptors = await getLabeledFaceDescriptions();
   const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
-  const canvas = faceapi.createCanvasFromMedia(video);
-  document.body.append(canvas);
   const displaySize = { width: video.width, height: video.height };
+
   faceapi.matchDimensions(canvas, displaySize);
   const tinyFaceOptions = new faceapi.TinyFaceDetectorOptions({
     inputSize: 320,
     scoreThreshold: 0.5,
   });
+
   setInterval(async () => {
     const detections = await faceapi
       .detectAllFaces(video, tinyFaceOptions)
       .withFaceLandmarks()
       .withFaceDescriptors();
     const resizedDetections = faceapi.resizeResults(detections, displaySize);
-    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-    const results = resizedDetections.map((d) => {
-      return faceMatcher.findBestMatch(d.descriptor);
-    });
-    results.forEach((result, i) => {
-      const box = resizedDetections[i].detection.box;
-      let label = result.label;
-      if (label === "unknown") {
-        label = "Desconocido";
-      }
-      const drawBox = new faceapi.draw.DrawBox(box, { label });
-      drawBox.draw(canvas);
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    resizedDetections.forEach((detection, i) => {
+      const result = faceMatcher.findBestMatch(detection.descriptor);
+      const box = detection.detection.box;
+      let label = result.label === "unknown" ? "Desconocido" : result.label;
+
+      new faceapi.draw.DrawBox(box, { label }).draw(canvas);
       leerNombre(label);
     });
   }, 100);
-});
+}
 
 function leerNombre(nombre) {
   const ahora = Date.now();
