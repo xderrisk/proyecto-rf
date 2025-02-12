@@ -16,3 +16,7 @@ document.getElementById('camaras').addEventListener('click', () => {
 document.getElementById('admi').addEventListener('click', () => {
     window.location.href = '../html/login.html';
 });
+
+document.getElementById('registro').addEventListener('click', () => {
+    window.location.href = '../html/registro.html';
+});

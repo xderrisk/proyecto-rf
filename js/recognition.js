@@ -88,7 +88,7 @@ function leerNombre(nombre) {
     if (nombre === "Desconocido") {
       mensaje = new SpeechSynthesisUtterance(`Persona desconocida detectada`);
     } else {
-      mensaje = new SpeechSynthesisUtterance(`Persona identificada: ${nombre}`);
+      mensaje = new SpeechSynthesisUtterance(`Bienvenido: ${nombre}`);
     }
     mensaje.lang = "es-ES";
     window.speechSynthesis.speak(mensaje);
