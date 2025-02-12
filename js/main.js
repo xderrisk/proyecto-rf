@@ -1,4 +1,5 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
+const sqlite3 = require('sqlite3').verbose();
 app.commandLine.appendSwitch('enable-speech-dispatcher');
 const path = require('path');
 const fs = require('fs');
@@ -47,6 +48,44 @@ function createWindow() {
   ];
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
+
+  verificarAdmin(win);
+}
+
+const db = new sqlite3.Database(path.join(__dirname, '../config/database.db'));
+const sqlSchema = `
+CREATE TABLE IF NOT EXISTS user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    apellido TEXT NOT NULL,
+    imagen BLOB NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS admi (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
+`;
+
+db.exec(sqlSchema, (err) => {
+  if (err) {
+      console.error('Error ejecutando SQL:', err);
+  } else {
+      console.log('Tablas verificadas correctamente.');
+  }
+});
+
+function verificarAdmin(win) {
+  db.get('SELECT COUNT(*) AS count FROM admi', (err, row) => {
+      if (err) {
+          console.error('Error verificando admins:', err);
+          return;
+      }
+      if (row.count === 0) {
+        win.loadFile('html/adminew.html');
+      }
+  });
 }
 
 ipcMain.handle('leer-config', async () => {
@@ -74,6 +113,64 @@ ipcMain.handle('pantalla-completa', (event) => {
   if (win) {
     win.setFullScreen(!win.isFullScreen());
   }
+});
+
+ipcMain.handle('open-file-dialog', async (event) => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['jpg', 'png'] }],
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths[0];
+  }
+  return null;
+});
+
+ipcMain.handle('adminew', async (event, { username, password }) => {
+  return new Promise((resolve, reject) => {
+      const query = `INSERT INTO admi (username, password) VALUES (?, ?)`;
+      db.run(query, [username, password], function(err) {
+          if (err) {
+              reject({ success: false, error: err.message });
+          } else {
+              resolve({ success: true });
+          }
+      });
+  });
+});
+
+ipcMain.handle('login', async (event, { username, password }) => {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM admi WHERE username = ? AND password = ?`;
+        db.get(query, [username, password], (err, row) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row ? true : false);
+            }
+        });
+    });
+});
+
+ipcMain.handle('add-user', async (event, { nombre, apellido, imagen }) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(imagen, (err, imageBuffer) => {
+      if (err) {
+        reject(new Error(`Error reading image file: ${err.message}`));
+        return;
+      }
+      const query = `INSERT INTO user (nombre, apellido, imagen) VALUES (?, ?, ?)`;
+      db.run(query, [nombre, apellido, imageBuffer], function(err) {
+        if (err) {
+          reject({ success: false, error: err.message });
+          } else {
+            resolve({ success: true });
+          }
+        }
+      );
+    });
+  });
 });
 
 app.whenReady().then(() => {

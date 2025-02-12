@@ -8,9 +8,9 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         return;
     }
 
-    window.api.login(username, password).then(isAuthenticated => {
-        if (isAuthenticated) {
-            window.location.href = '../html/admi.html';
+    window.api.adminew(username, password).then(addAdmi => {
+        if (addAdmi) {
+            window.location.href = '../html/index.html';
         }
     })
 })

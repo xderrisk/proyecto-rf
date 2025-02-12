@@ -6,6 +6,24 @@
     <title>Administración - Proyecto RF</title>
 </head>
 <body>
-    <p>En Desarrollo</p>
+    <div class="add-user-container">
+        <h1>Agregar Usuarios</h1>
+        <form id="addUserForm">
+            <div class="input-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div>
+                <label for="apellido">Apellido</label>
+                <input type="text" id="apellido" name="apellido" required>
+            </div>
+            <div>
+                <label for="imagen">Imagenes</label>
+                <button id="imagen">Seleccionar Imagen</button>
+            </div>
+            <button type="submit">Agregar</button>
+        </form>
+    </div>
+    <script src="../js/admi.js"></script>
 </body>
 </html>
