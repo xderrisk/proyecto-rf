@@ -6,3 +6,20 @@ body {
     font-family: sans-serif;
     color: #cccccc;
 }
+
+.mensaje-oculto {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+.mensaje-visible {
+    visibility: visible;
+    opacity: 1;
+}

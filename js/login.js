@@ -1,3 +1,5 @@
+import { mostrarMensaje } from "./notify.js";
+
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -11,6 +13,8 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     window.api.login(username, password).then(isAuthenticated => {
         if (isAuthenticated) {
             window.location.href = '../html/admi.html';
+        } else {
+            mostrarMensaje("Credenciales invalidas", "advertencia");
         }
     })
 })
