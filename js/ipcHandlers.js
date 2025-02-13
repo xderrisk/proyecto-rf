@@ -38,7 +38,7 @@ ipcMain.handle('pantalla-completa', (event) => {
 ipcMain.handle('open-file-dialog', async () => {
   const result = await dialog.showOpenDialog({
     properties: ['openFile'],
-    filters: [{ name: 'Images', extensions: ['jpg', 'png'] }],
+    filters: [{ name: 'Images', extensions: ['jpg', 'png', 'jpeg'] }],
   });
 
   return !result.canceled && result.filePaths.length > 0 ? result.filePaths[0] : null;
