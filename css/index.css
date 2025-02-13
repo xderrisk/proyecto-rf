@@ -11,6 +11,11 @@ header img {
     border-radius: 10px;
 }
 
+header h1 {
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
 .card-container {
     display: flex;
     gap: 20px;

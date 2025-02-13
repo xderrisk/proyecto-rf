@@ -4,8 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administración - Proyecto RF</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admi.css">
 </head>
 <body>
-    <p>En Desarrollo</p>
+    <div class="add-user-container">
+        <h1>Agregar Usuarios</h1>
+        <form id="addUserForm">
+            <div class="input-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div class="input-group">
+                <label for="apellido">Apellido</label>
+                <input type="text" id="apellido" name="apellido" required>
+            </div>
+            <div class="input-group">
+                <button id="imagen">Seleccionar Imagen</button>
+                <img id="imagePreview" src="" style="max-width: 100px; max-height: 100px; display: none;">
+            </div>
+            <button type="submit">Agregar</button>
+        </form>
+    </div>
+    <script type="module" src="../js/admi.js"></script>
 </body>
 </html>

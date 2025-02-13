@@ -4,10 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuración</title>
+    <link rel="stylesheet" href="../css/style.css">
     <script src="../js/config.js"></script>
 </head>
 <body>
-    <input type="file" id="imagen" accept="image/*">
-    <button onclick="rutaImagen()">Usar como portada</button>
+    <div class="add-content">
+        <form id="addContent">
+            <div class="input-group">
+                <input type="text" id="bienvenida" placeholder="Texto de bienvenida">
+            </div>
+            <div class="input-group">
+                <input type="file" id="imagen" accept="image/*">
+                <button class="logo">Usar como logo</button>
+            </div>
+            <div class="input-group">
+                <input type="file" id="imagen" accept="image/*">
+                <button class="fondo">Usar como fondo</button> 
+            </div>
+        </form>
+    </div>
 </body>
 </html>
