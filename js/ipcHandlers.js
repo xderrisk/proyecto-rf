@@ -4,8 +4,18 @@ const path = require('path');
 const db = require('./database');
 
 ipcMain.handle('leer-config', async () => {
+  const configPath = path.join(__dirname, '../config/config.json');
+  
   try {
-    const data = fs.readFileSync(path.join(__dirname, '../config/config.json'), 'utf8');
+    if (!fs.existsSync(configPath)) {
+      const defaultConfig = {
+        bienvenida: "Bienvenido",
+      };
+      fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2), 'utf8');
+      console.log('Config.json creado con valores predeterminados.');
+    }
+    
+    const data = fs.readFileSync(configPath, 'utf8');
     return JSON.parse(data);
   } catch (error) {
     console.error('Error leyendo JSON:', error);
