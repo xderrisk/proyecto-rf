@@ -14,7 +14,6 @@ ipcMain.handle('leer-config', async () => {
 });
 
 ipcMain.handle('ruta-modelos', () => path.join(__dirname, '../models'));
-ipcMain.handle('ruta-imagenes', () => path.join(__dirname, '../labels'));
 
 ipcMain.handle('pantalla-completa', (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
