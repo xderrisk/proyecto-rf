@@ -1,6 +1,11 @@
 const { ipcMain, dialog, BrowserWindow } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const configDir = path.join(__dirname, '../config');
+if (!fs.existsSync(configDir)) {
+  fs.mkdirSync(configDir, { recursive: true });
+  console.log('Carpeta config creada');
+}
 const db = require('./database');
 
 ipcMain.handle('leer-config', async () => {
