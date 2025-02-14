@@ -112,7 +112,7 @@ async function startFaceRecognition(video, canvas) {
   detectFaces();
 }
 
-async function registrarUsuario(nombre, video, box) {
+async function registrarUsuario(nombre, video, canvas, box) {
   const tempCanvas = document.createElement("canvas");
   const tempCtx = tempCanvas.getContext("2d");
   const scaleX = video.videoWidth / video.width;
