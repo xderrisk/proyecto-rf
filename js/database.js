@@ -16,6 +16,13 @@ CREATE TABLE IF NOT EXISTS admi (
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS registro (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    foto BLOB NOT NULL,
+    fecha_hora DATETIME NOT NULL
+)
 `;
 
 db.exec(sqlSchema, (err) => {

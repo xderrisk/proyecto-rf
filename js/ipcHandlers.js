@@ -81,3 +81,22 @@ ipcMain.handle('obtenerUsuarios', async () => {
     });
   });
 });
+
+ipcMain.handle('registrarReconocimiento', async (event, { nombre, foto, fecha_hora }) => {
+  return new Promise((resolve, reject) => {
+    const imageBuffer = Buffer.from(foto);
+    
+    if (imageBuffer.length === 0) {
+      reject({ success: false, error: "Imagen vacía" });
+      return;
+    }
+
+    db.run(
+      `INSERT INTO registro (nombre, foto, fecha_hora) VALUES (?, ?, ?)`, 
+      [nombre, imageBuffer, fecha_hora], 
+      function (err) {
+        err ? reject({ success: false, error: err.message }) : resolve({ success: true });
+      }
+    );
+  });
+});
