@@ -10,5 +10,6 @@ contextBridge.exposeInMainWorld('api', {
     add: (nombre, apellido, imagen) => ipcRenderer.invoke('add-user', { nombre, apellido, imagen }),
     openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
     obtenerUsuarios: () => ipcRenderer.invoke("obtenerUsuarios"),
-    registrarReconocimiento: (nombre, foto, fecha_hora) => ipcRenderer.invoke("registrarReconocimiento", { nombre, foto, fecha_hora })
+    registrarReconocimiento: (nombre, foto, fecha_hora) => ipcRenderer.invoke("registrarReconocimiento", { nombre, foto, fecha_hora }),
+    obtenerRegistros: () => ipcRenderer.invoke("obtenerRegistros"),
 });

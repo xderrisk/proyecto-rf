@@ -100,3 +100,22 @@ ipcMain.handle('registrarReconocimiento', async (event, { nombre, foto, fecha_ho
     );
   });
 });
+
+ipcMain.handle('obtenerRegistros', async () => {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT id, nombre, foto, fecha_hora FROM registro ORDER BY fecha_hora DESC`, [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(
+          rows.map(row => ({
+            id: row.id,
+            nombre: row.nombre,
+            foto: row.foto.toString("base64"),
+            fecha_hora: row.fecha_hora
+          }))
+        );
+      }
+    });
+  });
+});
