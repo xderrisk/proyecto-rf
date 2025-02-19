@@ -13,6 +13,7 @@
     "electron": "^34.0.2"
   },
   "dependencies": {
-    "sqlite3": "^5.1.7"
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.3"
   }
 }

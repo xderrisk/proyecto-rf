@@ -1,7 +1,8 @@
 const { BrowserWindow } = require('electron');
 const path = require('path');
+const pool = require('./database'); // Asegúrate de importar la conexión a PostgreSQL
 
-function createWindow() {
+async function createWindow() {
   const win = new BrowserWindow({
     minWidth: 400,
     minHeight: 450,
@@ -10,18 +11,19 @@ function createWindow() {
     },
   });
 
-  const db = require('./database');
-  db.get('SELECT COUNT(*) AS count FROM admi', (err, row) => {
+  try {
+    const res = await pool.query('SELECT COUNT(*) AS count FROM admi');
     let inicio = 'html/index.html';
 
-    if (err) {
-      console.error('Error verificando admins:', err);
-    } else if (row.count === 0) {
+    if (res.rows[0].count === "0") { // PostgreSQL devuelve el count como string
       inicio = 'html/signin.html';
     }
 
     win.loadFile(inicio);
-  });
+  } catch (err) {
+    console.error('Error verificando admins:', err);
+    win.loadFile('html/index.html'); // Fallback en caso de error
+  }
 
   return win;
 }

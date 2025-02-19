@@ -45,77 +45,62 @@ ipcMain.handle('open-file-dialog', async () => {
 });
 
 ipcMain.handle('adminew', async (event, { username, password }) => {
-  return new Promise((resolve, reject) => {
-    db.run(`INSERT INTO admi (username, password) VALUES (?, ?)`, [username, password], function (err) {
-      err ? reject({ success: false, error: err.message }) : resolve({ success: true });
-    });
-  });
+  try {
+    await db.query(`INSERT INTO admi (username, password) VALUES ($1, $2)`, [username, password]);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
 });
 
 ipcMain.handle('login', async (event, { username, password }) => {
-  return new Promise((resolve, reject) => {
-    db.get(`SELECT * FROM admi WHERE username = ? AND password = ?`, [username, password], (err, row) => {
-      err ? reject(err) : resolve(Boolean(row));
-    });
-  });
+  try {
+    const res = await db.query(`SELECT * FROM admi WHERE username = $1 AND password = $2`, [username, password]);
+    return res.rows.length > 0;
+  } catch (err) {
+    return false;
+  }
 });
 
 ipcMain.handle('add-user', async (event, { nombre, apellido, imagen }) => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(imagen, (err, imageBuffer) => {
-      if (err) {
-        reject(new Error(`Error reading image file: ${err.message}`));
-        return;
-      }
-      db.run(`INSERT INTO user (nombre, apellido, imagen) VALUES (?, ?, ?)`, [nombre, apellido, imageBuffer], function (err) {
-        err ? reject({ success: false, error: err.message }) : resolve({ success: true });
-      });
-    });
-  });
+  try {
+    const imageBuffer = fs.readFileSync(imagen);
+    await db.query(`INSERT INTO "user" (nombre, apellido, imagen) VALUES ($1, $2, $3)`, [nombre, apellido, imageBuffer]);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
 });
 
 ipcMain.handle('obtenerUsuarios', async () => {
-  return new Promise((resolve, reject) => {
-    db.all(`SELECT nombre, apellido, imagen FROM user`, [], (err, rows) => {
-      err ? reject(err) : resolve(rows);
-    });
-  });
+  try {
+    const res = await db.query(`SELECT nombre, apellido, imagen FROM "user"`);
+    return res.rows;
+  } catch (err) {
+    return [];
+  }
 });
 
 ipcMain.handle('registrarReconocimiento', async (event, { nombre, foto, fecha_hora }) => {
-  return new Promise((resolve, reject) => {
-    const imageBuffer = Buffer.from(foto);
-    
-    if (imageBuffer.length === 0) {
-      reject({ success: false, error: "Imagen vacía" });
-      return;
-    }
-
-    db.run(
-      `INSERT INTO registro (nombre, foto, fecha_hora) VALUES (?, ?, ?)`, 
-      [nombre, imageBuffer, fecha_hora], 
-      function (err) {
-        err ? reject({ success: false, error: err.message }) : resolve({ success: true });
-      }
-    );
-  });
+  try {
+    const imageBuffer = Buffer.from(foto, 'base64');
+    await db.query(`INSERT INTO registro (nombre, foto, fecha_hora) VALUES ($1, $2, $3)`, [nombre, imageBuffer, fecha_hora]);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
 });
 
 ipcMain.handle('obtenerRegistros', async () => {
-  return new Promise((resolve, reject) => {
-    db.all(`SELECT id, nombre, foto, fecha_hora FROM registro ORDER BY fecha_hora DESC`, [], (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(
-          rows.map(row => ({
-            id: row.id,
-            nombre: row.nombre,
-            foto: row.foto.toString("base64"),
-            fecha_hora: row.fecha_hora
-          }))
-        );
-      }
-    });
-  });
+  try {
+    const res = await db.query(`SELECT id, nombre, foto, fecha_hora FROM registro ORDER BY fecha_hora DESC`);
+    return res.rows.map(row => ({
+      id: row.id,
+      nombre: row.nombre,
+      foto: row.foto.toString("base64"),
+      fecha_hora: row.fecha_hora
+    }));
+  } catch (err) {
+    return [];
+  }
 });

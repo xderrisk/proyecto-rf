@@ -1,36 +1,38 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
+require('dotenv').config();
 
-const db = new sqlite3.Database(path.join(__dirname, '../config/database.db'));
+const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+});
 
 const sqlSchema = `
-CREATE TABLE IF NOT EXISTS user (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS "user" (
+    id SERIAL PRIMARY KEY,
     nombre TEXT NOT NULL,
     apellido TEXT NOT NULL,
-    imagen BLOB NOT NULL
+    imagen BYTEA NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS admi (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS registro (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     nombre TEXT NOT NULL,
-    foto BLOB NOT NULL,
-    fecha_hora DATETIME NOT NULL
-)
+    foto BYTEA NOT NULL,
+    fecha_hora TIMESTAMP NOT NULL
+);
 `;
 
-db.exec(sqlSchema, (err) => {
-  if (err) {
-      console.error('Error ejecutando SQL:', err);
-  } else {
-      console.log('Tablas verificadas correctamente.');
-  }
-});
+pool.query(sqlSchema)
+    .then(() => console.log('Tablas verificadas correctamente.'))
+    .catch((err) => console.error('Error ejecutando SQL:', err));
 
-module.exports = db;
+module.exports = pool;
