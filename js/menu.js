@@ -4,8 +4,11 @@ function createMenu(win) {
   const template = [
     {
       label: '<',
+      accelerator: 'Esc',
       click: () => {
-        if (win.webContents.canGoBack()) {
+        if (win.isFullScreen()) {
+          win.setFullScreen(false);
+        } else if (win.webContents.canGoBack()) {
           win.webContents.goBack();
         }
       },
