@@ -64,7 +64,17 @@ ipcMain.handle('login', async (event, { username, password }) => {
 
 ipcMain.handle('add-user', async (event, { nombre, apellido, imagen }) => {
   try {
-    const imageBuffer = fs.readFileSync(imagen);
+    let imageBuffer;
+
+    // Verifica si la imagen es base64
+    if (imagen.startsWith('data:image/')) {
+      // Extrae los datos binarios de la cadena base64
+      const base64Data = imagen.split(',')[1];
+      imageBuffer = Buffer.from(base64Data, 'base64');
+    } else {
+      // Si no es base64, entonces debería ser una ruta de archivo
+      imageBuffer = fs.readFileSync(imagen);
+    }
     await db.query(`INSERT INTO "user" (nombre, apellido, imagen) VALUES ($1, $2, $3)`, [nombre, apellido, imageBuffer]);
     return { success: true };
   } catch (err) {
