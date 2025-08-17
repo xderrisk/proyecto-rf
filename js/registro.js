@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       nombre.textContent = registro.nombre;
 
       const fecha = document.createElement("p");
-      fecha.textContent = registro.fecha_hora;
+      fecha.innerHTML = registro.fecha_hora.replace('\n', '<br>');
 
       div.appendChild(img);
       div.appendChild(nombre);

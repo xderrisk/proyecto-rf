@@ -91,12 +91,15 @@ ipcMain.handle('obtenerUsuarios', async () => {
   }
 });
 
-ipcMain.handle('registrarReconocimiento', async (event, { nombre, foto, fecha_hora }) => {
+ipcMain.handle('registrarReconocimiento', async (event, { nombre, foto }) => {
+  console.log('Intentando registrar:', { nombre, fotoLength: foto.length });
   try {
-    const imageBuffer = Buffer.from(foto, 'base64');
-    await db.query(`INSERT INTO registro (nombre, foto, fecha_hora) VALUES ($1, $2, $3)`, [nombre, imageBuffer, fecha_hora]);
+    const imageBuffer = Buffer.from(foto);
+    await db.query(`INSERT INTO registro (nombre, foto, fecha_hora) VALUES ($1, $2, NOW())`, [nombre, imageBuffer]);
+    console.log('Registro guardado correctamente');
     return { success: true };
   } catch (err) {
+    console.error('Error al guardar registro:', err);
     return { success: false, error: err.message };
   }
 });
@@ -104,12 +107,28 @@ ipcMain.handle('registrarReconocimiento', async (event, { nombre, foto, fecha_ho
 ipcMain.handle('obtenerRegistros', async () => {
   try {
     const res = await db.query(`SELECT id, nombre, foto, fecha_hora FROM registro ORDER BY fecha_hora DESC`);
-    return res.rows.map(row => ({
-      id: row.id,
-      nombre: row.nombre,
-      foto: row.foto.toString("base64"),
-      fecha_hora: row.fecha_hora
-    }));
+    return res.rows.map(row => {
+      const fecha = new Date(row.fecha_hora);
+      const hora = fecha.toLocaleTimeString('es-EC', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'America/Guayaquil'
+      });
+      const fechaFormateada = fecha.toLocaleDateString('es-EC', {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit',
+        timeZone: 'America/Guayaquil'
+      });
+      return {
+        id: row.id,
+        nombre: row.nombre,
+        foto: row.foto.toString("base64"),
+        fecha_hora: `${fechaFormateada}\n${hora}`
+      };
+    });
   } catch (err) {
     return [];
   }

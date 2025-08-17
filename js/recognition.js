@@ -127,29 +127,13 @@ async function registrarUsuario(nombre, video, canvas, box) {
   const faceBlob = await new Promise((resolve) => tempCanvas.toBlob(resolve, "image/jpeg", 0.95));
   const buffer = await faceBlob.arrayBuffer();
   const foto = Array.from(new Uint8Array(buffer));
-  const fecha_hora = new Date().toLocaleString("es-ES", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
 
   try {
-    await window.api.registrarReconocimiento(nombre, foto, fecha_hora);
-    console.log("Registro exitoso:", nombre);
+    await window.api.registrarReconocimiento(nombre, foto);
   } catch (error) {
     console.error("Error al registrar el reconocimiento:", error);
   }
 }
-
-function imageDataToBlob(imageData) {
-  return new Promise((resolve) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = imageData.width;
-    canvas.height = imageData.height;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    ctx.putImageData(imageData, 0, 0);
-    setTimeout(() => {
-      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.95);
-    }, 100);
-  });
-}
-
 
 function leerNombre(nombre) {
   if ("speechSynthesis" in window) {

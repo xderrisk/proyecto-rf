@@ -4,6 +4,8 @@ const pool = require('./database'); // Asegúrate de importar la conexión a Pos
 
 async function createWindow() {
   const win = new BrowserWindow({
+    width: 750,
+    height: 550,
     minWidth: 400,
     minHeight: 450,
     webPreferences: {
