@@ -1,0 +1,12 @@
+services:
+  postgres:
+    container_name: some-postgres
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=1314
+    volumes:
+      - ./config/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/localtime:/etc/localtime:ro
